@@ -1,6 +1,7 @@
 package com.example.test.service;
 
 import com.example.test.entity.Product;
+
 import com.example.test.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ public class ProductService
     {
         return productRepository.findById(id);
     }
+
 
     public Product create(Product product)
     {

@@ -2,6 +2,8 @@ package com.example.test.service;
 
 import com.example.test.entity.User;
 import com.example.test.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,14 @@ public class UserService
     public List<User> getAll()
     {
         return userRepository.findAll();
+    }
+
+    public User getCurrentUser()
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
     public Optional<User> getById(Long id)

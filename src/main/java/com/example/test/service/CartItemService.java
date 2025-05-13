@@ -27,6 +27,10 @@ public class CartItemService
     {
         return cartItemRepository.findById(id);
     }
+    public List<CartItem> getByUsername(String username)
+    {
+        return cartItemRepository.findByUser_Username(username);
+    }
 
     public CartItem create(CartItem cartItem)
     {
@@ -45,4 +49,5 @@ public class CartItemService
     {
         cartItemRepository.deleteById(id);
     }
+
 }

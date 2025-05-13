@@ -10,7 +10,6 @@ import java.util.Optional;
 @Service
 public class OrderItemService
 {
-
     private final OrderItemRepository orderItemRepository;
 
     public OrderItemService(OrderItemRepository orderItemRepository)
@@ -26,6 +25,12 @@ public class OrderItemService
     public Optional<OrderItem> getById(Long id)
     {
         return orderItemRepository.findById(id);
+    }
+
+    // Метод для отримання OrderItem для конкретного користувача
+    public List<OrderItem> getByUsername(String username)
+    {
+        return orderItemRepository.findByOrder_User_Username(username);
     }
 
     public OrderItem create(OrderItem orderItem)
@@ -47,3 +52,4 @@ public class OrderItemService
         orderItemRepository.deleteById(id);
     }
 }
+

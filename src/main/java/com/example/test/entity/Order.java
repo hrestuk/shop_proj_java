@@ -1,10 +1,11 @@
 package com.example.test.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Entity
 @Data
@@ -20,10 +21,11 @@ public class Order
     @JoinColumn(name = "user_id")
     private User user;
 
-    private Date orderDate;
+    private LocalDateTime orderDate;
 
     private double totalAmount;
 
-    @OneToMany(mappedBy = "order")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 }
