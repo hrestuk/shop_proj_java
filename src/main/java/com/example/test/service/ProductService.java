@@ -28,6 +28,10 @@ public class ProductService
         return productRepository.findById(id);
     }
 
+    public List<Product> getByCategory(String category)
+    {
+        return productRepository.findByCategory(category);
+    }
 
     public Product create(Product product)
     {

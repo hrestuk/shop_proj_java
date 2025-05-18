@@ -30,12 +30,6 @@ public class UserController
         return userService.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public User create(@RequestBody User user)
-    {
-        return userService.create(user);
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user)
     {

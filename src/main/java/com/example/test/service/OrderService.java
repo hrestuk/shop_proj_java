@@ -78,6 +78,7 @@ public class OrderService
         Order order = new Order();
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());
+        order.setTotalAmount(calculateTotalAmount(cartItems));
         order = orderRepository.save(order);
 
         for (CartItem cartItem : cartItems)
@@ -87,7 +88,7 @@ public class OrderService
             orderItem.setOrder(order);
             orderItem.setProduct(cartItem.getProduct());
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPriceAtPurchase(calculateTotalAmount(cartItems));
+            orderItem.setPriceAtPurchase(cartItem.getProduct().getPrice() * cartItem.getQuantity());
             orderItemRepository.save(orderItem);
 
             // Оновлення кількості товару в продукті

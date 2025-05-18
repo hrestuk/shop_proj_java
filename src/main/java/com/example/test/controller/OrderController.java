@@ -44,13 +44,6 @@ public class OrderController extends BaseController
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Order create(@RequestBody Order order)
-    {
-        User user = getCurrentUser();
-        order.setUser(user);
-        return orderService.create(order);
-    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Order> update(@PathVariable Long id, @RequestBody Order order)

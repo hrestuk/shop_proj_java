@@ -29,11 +29,17 @@ public class ProductController
         return productService.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Product create(@RequestBody Product product)
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Product>> getByCategory(@PathVariable String category)
     {
-        return productService.create(product);
+        List<Product> products = productService.getByCategory(category);
+        if (products.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(products);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product)

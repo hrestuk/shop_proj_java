@@ -43,23 +43,6 @@ public class OrderItemController extends BaseController
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<OrderItem> create(@RequestBody OrderItem orderItem)
-    {
-        Long orderId = orderItem.getOrder() != null ? orderItem.getOrder().getId() : null;
-        if (orderId == null)
-        {
-            return ResponseEntity.badRequest().build();
-        }
-
-        return orderService.getById(orderId)
-                .filter(order -> isAdmin() || isOwner(order.getUser()))
-                .map(order -> {
-                    orderItem.setOrder(order);
-                    return ResponseEntity.ok(orderItemService.create(orderItem));
-                })
-                .orElse(ResponseEntity.status(403).build());
-    }
 
     @PutMapping("/{id}")
     public ResponseEntity<OrderItem> update(@PathVariable Long id, @RequestBody OrderItem orderItem)
