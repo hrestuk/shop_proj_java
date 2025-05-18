@@ -2,148 +2,116 @@ package com.example.test.service;
 
 import com.example.test.entity.Product;
 import com.example.test.repository.ProductRepository;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+import static org.assertj.core.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
 public class ProductServiceTest
 {
-    @Autowired
+    @Mock
     private ProductRepository productRepository;
 
-    @Test
-    public void SaveProductTest()
+    @InjectMocks
+    private ProductService productService;
+
+    private Product sampleProduct;
+
+    @BeforeEach
+    public void setup()
     {
-        Product product = new Product();
-        product.setName("TestProduct1");
-        product.setPrice(123);
-        product.setQuantity(321);
-
-        Product saved = productRepository.save(product);
-
-        Assertions.assertThat(saved.getId()).isNotNull();
-        Assertions.assertThat(saved.getId()).isGreaterThan(0);
+        sampleProduct = Product.builder().id(1L).name("TestProduct").price(100).quantity(10).build();
     }
 
     @Test
-    public void FindProductByIdTest()
+    public void createProduct_ShouldReturnSavedProduct()
     {
-        Product product = new Product();
-        product.setName("FindTest");
-        product.setPrice(100);
-        product.setQuantity(10);
+        when(productRepository.save(sampleProduct)).thenReturn(sampleProduct);
 
-        Product saved = productRepository.save(product);
+        Product result = productService.create(sampleProduct);
 
-        Product found = productRepository.findById(saved.getId()).orElse(null);
-
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found.getName()).isEqualTo("FindTest");
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo("TestProduct");
+        verify(productRepository, times(1)).save(sampleProduct);
     }
 
     @Test
-    public void UpdateProductTest()
+    public void getAll_ShouldReturnListOfProducts()
     {
-        Product product = new Product();
-        product.setName("OldName");
-        product.setPrice(50);
-        product.setQuantity(5);
+        List<Product> products = Arrays.asList(sampleProduct);
+        when(productRepository.findAll()).thenReturn(products);
 
-        Product saved = productRepository.save(product);
-        saved.setName("UpdatedName");
+        List<Product> result = productService.getAll();
 
-        Product updated = productRepository.save(saved);
-
-        Assertions.assertThat(updated.getName()).isEqualTo("UpdatedName");
+        assertThat(result).hasSize(1);
+        verify(productRepository, times(1)).findAll();
     }
 
     @Test
-    public void DeleteProductTest()
+    public void getById_ShouldReturnProduct()
     {
-        Product product = new Product();
-        product.setName("ToDelete");
-        product.setPrice(10);
-        product.setQuantity(1);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(sampleProduct));
 
-        Product saved = productRepository.save(product);
-        Assertions.assertThat(saved.getId()).isNotNull();
-        productRepository.delete(saved);
+        Optional<Product> result = productService.getById(1L);
 
-        boolean exists = productRepository.findById(saved.getId()).isPresent();
-        Assertions.assertThat(exists).isFalse();
+        assertThat(result).isPresent();
+        assertThat(result.get().getName()).isEqualTo("TestProduct");
+        verify(productRepository, times(1)).findById(1L);
     }
 
     @Test
-    public void FindAllProductsTest()
+    public void getById_ShouldReturnEmpty_WhenProductNotFound()
     {
-        Product p1 = new Product();
-        p1.setName("Prod1");
-        p1.setPrice(100);
-        p1.setQuantity(1);
+        when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
-        Product p2 = new Product();
-        p2.setName("Prod2");
-        p2.setPrice(200);
-        p2.setQuantity(2);
+        Optional<Product> result = productService.getById(999L);
 
-        productRepository.save(p1);
-        productRepository.save(p2);
-
-        List<Product> products = productRepository.findAll();
-
-        Assertions.assertThat(products).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(result).isEmpty();
+        verify(productRepository, times(1)).findById(999L);
     }
 
     @Test
-    public void FindByNameTest()
+    public void updateProduct_ShouldReturnUpdatedProduct()
     {
-        Product product = new Product();
-        product.setName("UniqueName");
-        product.setPrice(999);
-        product.setQuantity(9);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(sampleProduct));
+        when(productRepository.save(any(Product.class))).thenReturn(sampleProduct);
 
-        productRepository.save(product);
+        Product update = Product.builder().name("UpdatedName").price(200).quantity(5).build();
 
-        Product found = productRepository.findByName("UniqueName");
+        Product result = productService.update(1L, update);
 
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found.getName()).isEqualTo("UniqueName");
+        assertThat(result.getName()).isEqualTo("UpdatedName");
+        assertThat(result.getPrice()).isEqualTo(200);
+        verify(productRepository).save(any(Product.class));
     }
 
     @Test
-    public void NegativeIdTest()
+    public void update_ShouldReturnNull_WhenProductNotFound()
     {
-        Product product = new Product();
-        product.setName("TestProduct");
-        product.setPrice(100);
-        product.setQuantity(10);
+        when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
-        Product saved = productRepository.save(product);
+        Product updated = productService.update(999L, sampleProduct);
 
-        // неправильна перевірка: id не може бути -1
-        Assertions.assertThat(saved.getId()).isEqualTo(-1);
+        assertThat(updated).isNull();
+        verify(productRepository, times(1)).findById(999L);
+        verify(productRepository, never()).save(any());
     }
 
     @Test
-    public void EmptyProductTest()
+    public void deleteProduct_ShouldCallRepositoryDelete()
     {
-        Product product = new Product();
-        product.setName("TestProduct");
-        product.setPrice(100);
-        product.setQuantity(10);
+        productService.delete(1L);
 
-        Product saved = productRepository.save(product);
-
-        // saved точно не null
-        Assertions.assertThat(saved).isNull();
+        verify(productRepository, times(1)).deleteById(1L);
     }
-
 }
