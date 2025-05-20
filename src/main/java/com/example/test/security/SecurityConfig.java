@@ -33,6 +33,13 @@ public class SecurityConfig
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers(
+                            "/v3/api-docs/**",
+                            "/swagger-ui.html",
+                            "/swagger-ui/**",
+                            "/swagger-resources/**",
+                            "/webjars/**"
+                    ).permitAll()
                     // ======== PRODUCTS ========
                     .requestMatchers(HttpMethod.GET, "/products/**").hasAnyRole("USER", "ADMIN")
                     .requestMatchers(HttpMethod.POST, "/products/**").hasRole("ADMIN")
@@ -45,18 +52,18 @@ public class SecurityConfig
                     .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
                     // ======== ORDERS ========
                     .requestMatchers(HttpMethod.GET, "/orders/**").hasAnyRole("USER", "ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/orders/**").hasAnyRole("USER", "ADMIN")
+                    //.requestMatchers(HttpMethod.POST, "/orders/**").hasAnyRole("USER", "ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/orders/**").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
                     // ======== ORDER-ITEMS ========
                     .requestMatchers(HttpMethod.GET, "/order-items/**").hasAnyRole("USER", "ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/order-items/**").hasAnyRole("USER", "ADMIN")
+                    //.requestMatchers(HttpMethod.POST, "/order-items/**").hasAnyRole("USER", "ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/order-items/**").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/order-items/**").hasRole("ADMIN")
                     // ======== CART-ITEMS ========
                     .requestMatchers(HttpMethod.GET, "/cart-items/**").hasAnyRole("USER", "ADMIN")
                     .requestMatchers(HttpMethod.POST, "/cart-items/**").hasAnyRole("USER", "ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/cart-items/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/cart-items/**").hasAnyRole("USER", "ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/cart-items/**").hasAnyRole("USER", "ADMIN")
 
                     .anyRequest().authenticated()

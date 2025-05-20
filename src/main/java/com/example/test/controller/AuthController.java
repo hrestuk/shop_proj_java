@@ -7,8 +7,10 @@ import com.example.test.entity.User;
 import com.example.test.repository.UserRepository;
 import com.example.test.security.JwtUtil;
 import com.example.test.security.UserDetailsServiceImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,17 +43,24 @@ public class AuthController
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request)
+    public ResponseEntity<?> login(@RequestBody AuthRequest request)
     {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
+        try
+        {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        String token = jwtUtil.generateToken(userDetails);
-        System.out.println(request.getUsername());
-        return ResponseEntity.ok(new AuthResponse(token));
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+            String token = jwtUtil.generateToken(userDetails);
+            return ResponseEntity.ok(new AuthResponse(token));
+        }
+        catch (BadCredentialsException ex)
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong username or password");
+        }
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody AuthRequest request)
