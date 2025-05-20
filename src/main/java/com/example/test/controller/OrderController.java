@@ -2,7 +2,6 @@ package com.example.test.controller;
 
 import com.example.test.entity.Order;
 import com.example.test.entity.User;
-import com.example.test.repository.UserRepository;
 import com.example.test.service.OrderService;
 import com.example.test.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +14,11 @@ import java.util.List;
 public class OrderController extends BaseController
 {
     private final OrderService orderService;
-    private final UserRepository userRepository;
 
-    public OrderController(OrderService orderService, UserRepository userRepository, UserService userService)
+    public OrderController(OrderService orderService, UserService userService)
     {
         super(userService);
         this.orderService = orderService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping

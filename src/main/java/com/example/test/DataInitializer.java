@@ -28,33 +28,20 @@ public class DataInitializer implements CommandLineRunner
             product1.setPrice(15.99);
             product1.setQuantity(20);
 
-            Product product2 = new Product();
-            product2.setName("Jeans");
-            product2.setPrice(20.99);
-            product2.setQuantity(40);
-
-            Product product3 = new Product();
-            product3.setName("Hat");
-            product3.setPrice(55.12);
-            product3.setQuantity(20);
-
             productRepository.save(product1);
-            productRepository.save(product2);
-            productRepository.save(product3);
 
-            System.out.println("Product initialized");
+            System.out.println("Product initialized test");
         }
 
         if (userRepository.count() == 0)
         {
-
             User user2 = new User();
             user2.setUsername("adminuser");
             user2.setPassword(passwordEncoder.encode("1234"));
             user2.setRole(Roles.ADMIN);
 
             userRepository.save(user2);
-
+            System.out.println("User initialized test");
         }
 
     }

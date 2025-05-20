@@ -2,6 +2,7 @@ package com.example.test.controller;
 
 import com.example.test.entity.Product;
 import com.example.test.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,11 @@ public class ProductController
         return ResponseEntity.ok(products);
     }
 
+    @PostMapping
+    public Product create(@Valid @RequestBody Product product)
+    {
+        return productService.create(product);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product)

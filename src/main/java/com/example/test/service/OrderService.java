@@ -98,6 +98,7 @@ public class OrderService
                 throw new IllegalArgumentException("Not enough stock for product: " + product.getName());
             }
             product.setQuantity(newQuantity);
+
             productRepository.save(product);
         }
 

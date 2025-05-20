@@ -3,11 +3,9 @@ package com.example.test.controller;
 import com.example.test.entity.CartItem;
 import com.example.test.entity.Order;
 import com.example.test.entity.User;
-import com.example.test.repository.UserRepository;
 import com.example.test.service.CartItemService;
 import com.example.test.service.OrderService;
 import com.example.test.service.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -18,14 +16,12 @@ public class CartItemController extends BaseController
 {
     private final CartItemService cartItemService;
     private final OrderService orderService;
-    private final UserRepository userRepository;
 
-    public CartItemController(CartItemService cartItemService, OrderService orderService, UserRepository userRepository, UserService userService)
+    public CartItemController(CartItemService cartItemService, OrderService orderService, UserService userService)
     {
         super(userService);
         this.cartItemService = cartItemService;
         this.orderService = orderService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -94,7 +90,7 @@ public class CartItemController extends BaseController
         }
         catch (IllegalArgumentException e)
         {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.badRequest().body(null);
         }
     }
 }
